@@ -759,7 +759,7 @@ public class NotificationService {
         mBuilder.setGroupSummary(true);
         mBuilder.setGroup(CONVERSATIONS_GROUP);
         mBuilder.setDeleteIntent(createDeleteIntent(null));
-        mBuilder.setSmallIcon(R.drawable.ic_notification);
+        mBuilder.setSmallIcon(R.drawable.ic_launcher_foreground);
         return mBuilder;
     }
 
@@ -856,7 +856,7 @@ public class NotificationService {
                 }
             }
             mBuilder.setWhen(conversation.getLatestMessage().getTimeSent());
-            mBuilder.setSmallIcon(R.drawable.ic_notification);
+            mBuilder.setSmallIcon(R.drawable.ic_launcher_foreground);
             mBuilder.setDeleteIntent(createDeleteIntent(conversation));
             mBuilder.setContentIntent(createContentIntent(conversation));
         }
@@ -925,11 +925,11 @@ public class NotificationService {
             for (Message message : messages) {
                 final Person sender = message.getStatus() == Message.STATUS_RECEIVED ? getPerson(message) : null;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && isImageMessage(message)) {
-                    final Uri dataUri = FileBackend.getMediaUri(mXmppConnectionService, mXmppConnectionService.getFileBackend().getFile(message));
+                    //final Uri dataUri = FileBackend.getMediaUri(mXmppConnectionService, mXmppConnectionService.getFileBackend().getFile(message));
                     NotificationCompat.MessagingStyle.Message imageMessage = new NotificationCompat.MessagingStyle.Message(UIHelper.getMessagePreview(mXmppConnectionService, message).first, message.getTimeSent(), sender);
-                    if (dataUri != null) {
-                        imageMessage.setData(message.getMimeType(), dataUri);
-                    }
+//                    if (dataUri != null) {
+//                        imageMessage.setData(message.getMimeType(), dataUri);
+//                    }
                     messagingStyle.addMessage(imageMessage);
                 } else {
                     messagingStyle.addMessage(UIHelper.getMessagePreview(mXmppConnectionService, message).first, message.getTimeSent(), sender);
@@ -1281,7 +1281,7 @@ public class NotificationService {
     private void notify(String tag, int id, Notification notification) {
         final NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mXmppConnectionService);
         try {
-            notificationManager.notify(tag, id, notification);
+           // notificationManager.notify(tag, id, notification);
         } catch (RuntimeException e) {
             Log.d(Config.LOGTAG, "unable to make notification", e);
         }
@@ -1290,7 +1290,7 @@ public class NotificationService {
     public void notify(int id, Notification notification) {
         final NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mXmppConnectionService);
         try {
-            notificationManager.notify(id, notification);
+          //  notificationManager.notify(id, notification);
         } catch (RuntimeException e) {
             Log.d(Config.LOGTAG, "unable to make notification", e);
         }

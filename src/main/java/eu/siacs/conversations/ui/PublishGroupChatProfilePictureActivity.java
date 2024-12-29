@@ -40,7 +40,6 @@ import android.widget.Toast;
 import androidx.annotation.StringRes;
 import androidx.databinding.DataBindingUtil;
 
-import com.theartofdev.edmodo.cropper.CropImage;
 
 import eu.siacs.conversations.Config;
 import eu.siacs.conversations.R;
@@ -50,6 +49,8 @@ import eu.siacs.conversations.ui.interfaces.OnAvatarPublication;
 import eu.siacs.conversations.ui.util.PendingItem;
 
 import static eu.siacs.conversations.ui.PublishProfilePictureActivity.REQUEST_CHOOSE_PICTURE;
+
+import com.canhub.cropper.CropImage;
 
 public class PublishGroupChatProfilePictureActivity extends XmppActivity implements OnAvatarPublication {
     private final PendingItem<String> pendingConversationUuid = new PendingItem<>();
@@ -114,18 +115,19 @@ public class PublishGroupChatProfilePictureActivity extends XmppActivity impleme
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            final CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            //final CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                this.uri = result.getUri();
+              //  this.uri = result.getUri();
                 if (xmppConnectionServiceBound) {
                     reloadAvatar();
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
-                if (error != null) {
-                    Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+                //Exception error = result.getError();
+//                if (error != null) {
+//                    Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
+//                }
             }
         } else if (requestCode == REQUEST_CHOOSE_PICTURE) {
             if (resultCode == RESULT_OK) {

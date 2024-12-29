@@ -16,7 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.StringRes;
 
-import com.theartofdev.edmodo.cropper.CropImage;
+
+import com.canhub.cropper.CropImage;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -133,18 +134,18 @@ public class PublishProfilePictureActivity extends XmppActivity implements XmppC
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK) {
-                this.avatarUri = result.getUri();
-                if (xmppConnectionServiceBound) {
-                    loadImageIntoPreview(this.avatarUri);
-                }
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
-                if (error != null) {
-                    Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
+//            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+//            if (resultCode == RESULT_OK) {
+//                this.avatarUri = result.getUri();
+//                if (xmppConnectionServiceBound) {
+//                    loadImageIntoPreview(this.avatarUri);
+//                }
+//            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+//                Exception error = result.getError();
+//                if (error != null) {
+//                    Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
+//                }
+         //   }
         } else if (requestCode == REQUEST_CHOOSE_PICTURE) {
             if (resultCode == RESULT_OK) {
                 cropUri(this, data.getData());
@@ -161,11 +162,11 @@ public class PublishProfilePictureActivity extends XmppActivity implements XmppC
                     REQUEST_CHOOSE_PICTURE
             );
         } else {
-            CropImage.activity()
-                    .setOutputCompressFormat(Bitmap.CompressFormat.PNG)
-                    .setAspectRatio(1, 1)
-                    .setMinCropResultSize(Config.AVATAR_SIZE, Config.AVATAR_SIZE)
-                    .start(activity);
+//            CropImage.activity()
+//                    .setOutputCompressFormat(Bitmap.CompressFormat.PNG)
+//                    .setAspectRatio(1, 1)
+//                    .setMinCropResultSize(Config.AVATAR_SIZE, Config.AVATAR_SIZE)
+//                    .start(activity);
         }
     }
 
@@ -211,10 +212,10 @@ public class PublishProfilePictureActivity extends XmppActivity implements XmppC
     }
 
     public static void cropUri(final Activity activity, final Uri uri) {
-        CropImage.activity(uri).setOutputCompressFormat(Bitmap.CompressFormat.PNG)
-                .setAspectRatio(1, 1)
-                .setMinCropResultSize(Config.AVATAR_SIZE, Config.AVATAR_SIZE)
-                .start(activity);
+//        CropImage.activity(uri).setOutputCompressFormat(Bitmap.CompressFormat.PNG)
+//                .setAspectRatio(1, 1)
+//                .setMinCropResultSize(Config.AVATAR_SIZE, Config.AVATAR_SIZE)
+//                .start(activity);
     }
 
     protected void loadImageIntoPreview(Uri uri) {

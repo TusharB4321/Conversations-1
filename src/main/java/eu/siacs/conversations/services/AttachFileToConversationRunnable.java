@@ -7,8 +7,8 @@ import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import net.ypresto.androidtranscoder.MediaTranscoder;
-import net.ypresto.androidtranscoder.format.MediaFormatStrategy;
+//import net.ypresto.androidtranscoder.MediaTranscoder;
+//import net.ypresto.androidtranscoder.format.MediaFormatStrategy;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -27,7 +27,7 @@ import eu.siacs.conversations.utils.Android360pFormatStrategy;
 import eu.siacs.conversations.utils.Android720pFormatStrategy;
 import eu.siacs.conversations.utils.MimeUtils;
 
-public class AttachFileToConversationRunnable implements Runnable, MediaTranscoder.Listener {
+public class AttachFileToConversationRunnable implements Runnable {
 
 	private final XmppConnectionService mXmppConnectionService;
 	private final Message message;
@@ -91,73 +91,73 @@ public class AttachFileToConversationRunnable implements Runnable, MediaTranscod
 		mXmppConnectionService.startForcingForegroundNotification();
 		message.setRelativeFilePath(message.getUuid() + ".mp4");
 		final DownloadableFile file = mXmppConnectionService.getFileBackend().getFile(message);
-		final MediaFormatStrategy formatStrategy = "720".equals(getVideoCompression()) ? new Android720pFormatStrategy() : new Android360pFormatStrategy();
+		//final MediaFormatStrategy formatStrategy = "720".equals(getVideoCompression()) ? new Android720pFormatStrategy() : new Android360pFormatStrategy();
 		file.getParentFile().mkdirs();
 		final ParcelFileDescriptor parcelFileDescriptor = mXmppConnectionService.getContentResolver().openFileDescriptor(uri, "r");
 		if (parcelFileDescriptor == null) {
 			throw new FileNotFoundException("Parcel File Descriptor was null");
 		}
 		FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-		Future<Void> future = MediaTranscoder.getInstance().transcodeVideo(fileDescriptor, file.getAbsolutePath(), formatStrategy, this);
-		try {
-			future.get();
-		} catch (InterruptedException e) {
-			throw new AssertionError(e);
-		} catch (ExecutionException e) {
-			if (e.getCause() instanceof Error) {
-				mXmppConnectionService.stopForcingForegroundNotification();
-				processAsFile();
-			} else {
-				Log.d(Config.LOGTAG, "ignoring execution exception. Should get handled by onTranscodeFiled() instead", e);
-			}
-		}
+		//Future<Void> future = MediaTranscoder.getInstance().transcodeVideo(fileDescriptor, file.getAbsolutePath(), formatStrategy, this);
+//		try {
+//			future.get();
+//		} catch (InterruptedException e) {
+//			throw new AssertionError(e);
+//		} catch (ExecutionException e) {
+//			if (e.getCause() instanceof Error) {
+//				mXmppConnectionService.stopForcingForegroundNotification();
+//				processAsFile();
+//			} else {
+//				Log.d(Config.LOGTAG, "ignoring execution exception. Should get handled by onTranscodeFiled() instead", e);
+//			}
+//		}
 	}
 
-	@Override
-	public void onTranscodeProgress(double progress) {
-		final int p = (int) Math.round(progress * 100);
-		if (p > currentProgress) {
-			currentProgress = p;
-			mXmppConnectionService.getNotificationService().updateFileAddingNotification(p,message);
-		}
-	}
+//	@Override
+//	public void onTranscodeProgress(double progress) {
+//		final int p = (int) Math.round(progress * 100);
+//		if (p > currentProgress) {
+//			currentProgress = p;
+//			mXmppConnectionService.getNotificationService().updateFileAddingNotification(p,message);
+//		}
+//	}
 
-	@Override
-	public void onTranscodeCompleted() {
-		mXmppConnectionService.stopForcingForegroundNotification();
-		final File file = mXmppConnectionService.getFileBackend().getFile(message);
-		long convertedFileSize = mXmppConnectionService.getFileBackend().getFile(message).getSize();
-		Log.d(Config.LOGTAG,"originalFileSize="+originalFileSize+" convertedFileSize="+convertedFileSize);
-		if (originalFileSize != 0 && convertedFileSize >= originalFileSize) {
-			if (file.delete()) {
-				Log.d(Config.LOGTAG,"original file size was smaller. deleting and processing as file");
-				processAsFile();
-				return;
-			} else {
-				Log.d(Config.LOGTAG,"unable to delete converted file");
-			}
-		}
-		mXmppConnectionService.getFileBackend().updateFileParams(message);
-		if (message.getEncryption() == Message.ENCRYPTION_DECRYPTED) {
-			mXmppConnectionService.getPgpEngine().encrypt(message, callback);
-		} else {
-			mXmppConnectionService.sendMessage(message);
-			callback.success(message);
-		}
-	}
+//	@Override
+//	public void onTranscodeCompleted() {
+//		mXmppConnectionService.stopForcingForegroundNotification();
+//		final File file = mXmppConnectionService.getFileBackend().getFile(message);
+//		long convertedFileSize = mXmppConnectionService.getFileBackend().getFile(message).getSize();
+//		Log.d(Config.LOGTAG,"originalFileSize="+originalFileSize+" convertedFileSize="+convertedFileSize);
+//		if (originalFileSize != 0 && convertedFileSize >= originalFileSize) {
+//			if (file.delete()) {
+//				Log.d(Config.LOGTAG,"original file size was smaller. deleting and processing as file");
+//				processAsFile();
+//				return;
+//			} else {
+//				Log.d(Config.LOGTAG,"unable to delete converted file");
+//			}
+//		}
+//		mXmppConnectionService.getFileBackend().updateFileParams(message);
+//		if (message.getEncryption() == Message.ENCRYPTION_DECRYPTED) {
+//			mXmppConnectionService.getPgpEngine().encrypt(message, callback);
+//		} else {
+//			mXmppConnectionService.sendMessage(message);
+//			callback.success(message);
+//		}
+//	}
 
-	@Override
-	public void onTranscodeCanceled() {
-		mXmppConnectionService.stopForcingForegroundNotification();
-		processAsFile();
-	}
+//	@Override
+//	public void onTranscodeCanceled() {
+//		mXmppConnectionService.stopForcingForegroundNotification();
+//		processAsFile();
+//	}
 
-	@Override
-	public void onTranscodeFailed(Exception e) {
-		mXmppConnectionService.stopForcingForegroundNotification();
-		Log.d(Config.LOGTAG,"video transcoding failed",e);
-		processAsFile();
-	}
+//	@Override
+//	public void onTranscodeFailed(Exception e) {
+//		mXmppConnectionService.stopForcingForegroundNotification();
+//		Log.d(Config.LOGTAG,"video transcoding failed",e);
+//		processAsFile();
+//	}
 
 	@Override
 	public void run() {

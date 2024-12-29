@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="eu.siacs.conversations">
 
-    <application tools:ignore="GoogleAppIndexingWarning">
+    <application
+        android:icon="@mipmap/ic_launcher_background"
+        tools:replace="android:icon"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".ui.ManageAccountActivity"
             android:label="@string/title_activity_manage_accounts"
@@ -26,6 +29,7 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".ui.ImportBackupActivity"
+            android:exported="true"
             android:label="@string/restore_backup"
             android:launchMode="singleTask">
             <intent-filter>

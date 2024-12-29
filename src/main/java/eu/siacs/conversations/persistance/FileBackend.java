@@ -101,15 +101,16 @@ public class FileBackend {
         try {
             final Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
-                long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
-                cursor.close();
-                return size;
+//                long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+//                cursor.close();
+//                return size;
             } else {
                 return -1;
             }
         } catch (Exception e) {
             return -1;
         }
+        return -1;
     }
 
     public static boolean allFilesUnderSize(Context context, List<Attachment> attachments, long max) {
@@ -311,7 +312,7 @@ public class FileBackend {
         } catch (Exception e) {
             width = -1;
         }
-        metadataRetriever.release();
+       // metadataRetriever.release();
         Log.d(Config.LOGTAG, "extracted video dims " + width + "x" + height);
         return rotated ? new Dimensions(width, height) : new Dimensions(height, width);
     }
@@ -394,26 +395,26 @@ public class FileBackend {
         }
     }
 
-    public static Uri getMediaUri(Context context, File file) {
-        final String filePath = file.getAbsolutePath();
-        final Cursor cursor;
-        try {
-            cursor = context.getContentResolver().query(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    new String[]{MediaStore.Images.Media._ID},
-                    MediaStore.Images.Media.DATA + "=? ",
-                    new String[]{filePath}, null);
-        } catch (SecurityException e) {
-            return null;
-        }
-        if (cursor != null && cursor.moveToFirst()) {
-            final int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
-            cursor.close();
-            return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(id));
-        } else {
-            return null;
-        }
-    }
+//    public static Uri getMediaUri(Context context, File file) {
+//        final String filePath = file.getAbsolutePath();
+//        final Cursor cursor;
+//        try {
+//            cursor = context.getContentResolver().query(
+//                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//                    new String[]{MediaStore.Images.Media._ID},
+//                    MediaStore.Images.Media.DATA + "=? ",
+//                    new String[]{filePath}, null);
+//        } catch (SecurityException e) {
+//            return null;
+//        }
+//        if (cursor != null && cursor.moveToFirst()) {
+//            //final int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+//            cursor.close();
+//            return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(id));
+//        } else {
+//            return null;
+//        }
+//    }
 
     public static void updateFileParams(Message message, String url, long size) {
         final StringBuilder body = new StringBuilder();

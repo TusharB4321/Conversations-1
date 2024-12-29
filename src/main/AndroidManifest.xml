@@ -3,14 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="eu.siacs.conversations">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission
-        android:name="android.permission.READ_PHONE_STATE"
-        android:maxSdkVersion="22" />
-    <uses-permission android:name="android.permission.INTERNET" />
+<!--    <uses-permission-->
+<!--        android:name="android.permission.READ_PHONE_STATE"-->
+<!--        android:maxSdkVersion="22" />-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -31,6 +36,7 @@
     <uses-feature
         android:name="android.hardware.location.network"
         android:required="false" />
+
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -70,9 +76,13 @@
             android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc" />
 
-        <service android:name=".services.XmppConnectionService" />
+        <service android:name=".services.XmppConnectionService"
+            android:exported="true"
+            android:foregroundServiceType="dataSync"
+            android:permission="eu.siacs.conversations.PERMISSION" />
 
-        <receiver android:name=".services.EventReceiver">
+        <receiver android:name=".services.EventReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -96,6 +106,7 @@
             android:label="@string/title_activity_show_location" />
         <activity
             android:name=".ui.ConversationActivity"
+            android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -104,18 +115,18 @@
         </activity>
         <activity
             android:name=".ui.ConversationsActivity"
-            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:minWidth="300dp"
             android:minHeight="300dp"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.ScanActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/ConversationsTheme.FullScreen"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".ui.UriHandlerActivity"
+            android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -147,6 +158,7 @@
         </activity>
         <activity
             android:name=".ui.StartConversationActivity"
+            android:exported="true"
             android:label="@string/title_activity_start_conversation"
             android:launchMode="singleTop">
             <intent-filter>
@@ -155,6 +167,7 @@
         </activity>
         <activity
             android:name=".ui.SettingsActivity"
+            android:exported="true"
             android:label="@string/title_activity_settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -173,6 +186,7 @@
         <activity
             android:name=".ui.ChooseAccountForProfilePictureActivity"
             android:enabled="false"
+            android:exported="true"
             android:label="@string/choose_account">
             <intent-filter android:label="@string/set_profile_picture">
                 <action android:name="android.intent.action.ATTACH_DATA" />
@@ -205,6 +219,7 @@
             android:label="@string/group_chat_avatar" />
         <activity
             android:name=".ui.ShareWithActivity"
+            android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTop">
 
@@ -237,6 +252,7 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".ui.AboutActivity"
+            android:exported="true"
             android:parentActivityName=".ui.SettingsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -246,10 +262,10 @@
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".ui.MemorizingActivity" />
+<!--        <activity-->
+<!--            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"-->
+<!--            android:theme="@style/Base.Theme.AppCompat" />-->
+<!--        <activity android:name=".ui.MemorizingActivity" />-->
 
         <activity
             android:name=".ui.MediaBrowserActivity"
@@ -259,6 +275,7 @@
         <service android:name=".services.ImportBackupService" />
         <service
             android:name=".services.ContactChooserTargetService"
+            android:exported="true"
             android:permission="android.permission.BIND_CHOOSER_TARGET_SERVICE">
             <intent-filter>
                 <action android:name="android.service.chooser.ChooserTargetService" />
@@ -282,6 +299,7 @@
 
         <activity
             android:name=".ui.ShortcutActivity"
+            android:exported="true"
             android:label="@string/contact">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />

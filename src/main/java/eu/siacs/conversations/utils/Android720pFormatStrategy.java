@@ -7,13 +7,14 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import net.ypresto.androidtranscoder.format.MediaFormatExtraConstants;
-import net.ypresto.androidtranscoder.format.MediaFormatStrategy;
-import net.ypresto.androidtranscoder.format.OutputFormatUnavailableException;
+//import net.ypresto.androidtranscoder.format.MediaFormatExtraConstants;
+//import net.ypresto.androidtranscoder.format.MediaFormatStrategy;
+//import net.ypresto.androidtranscoder.format.OutputFormatUnavailableException;
 
 import eu.siacs.conversations.Config;
 
-public class Android720pFormatStrategy implements MediaFormatStrategy {
+//implements MediaFormatStrategy
+public class Android720pFormatStrategy  {
 
     private static final int LONGER_LENGTH = 1280;
     private static final int SHORTER_LENGTH = 720;
@@ -29,48 +30,48 @@ public class Android720pFormatStrategy implements MediaFormatStrategy {
         mAudioChannels = 2;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    @Override
-    public MediaFormat createVideoOutputFormat(MediaFormat inputFormat) {
-        int width = inputFormat.getInteger(MediaFormat.KEY_WIDTH);
-        int height = inputFormat.getInteger(MediaFormat.KEY_HEIGHT);
-        int longer, shorter, outWidth, outHeight;
-        if (width >= height) {
-            longer = width;
-            shorter = height;
-            outWidth = LONGER_LENGTH;
-            outHeight = SHORTER_LENGTH;
-        } else {
-            shorter = width;
-            longer = height;
-            outWidth = SHORTER_LENGTH;
-            outHeight = LONGER_LENGTH;
-        }
-        if (longer * 9 != shorter * 16) {
-            throw new OutputFormatUnavailableException("This video is not 16:9, and is not able to transcode. (" + width + "x" + height + ")");
-        }
-        if (shorter <= SHORTER_LENGTH) {
-            Log.d(Config.LOGTAG, "This video is less or equal to 720p, pass-through. (" + width + "x" + height + ")");
-            return null;
-        }
-        MediaFormat format = MediaFormat.createVideoFormat("video/avc", outWidth, outHeight);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitrate);
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, 30);
-        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 3);
-        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            format.setInteger(MediaFormat.KEY_PROFILE ,MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline);
-            format.setInteger(MediaFormat.KEY_LEVEL, MediaCodecInfo.CodecProfileLevel.AVCLevel13);
-        }
-        return format;
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+//    @Override
+//    public MediaFormat createVideoOutputFormat(MediaFormat inputFormat) {
+//        int width = inputFormat.getInteger(MediaFormat.KEY_WIDTH);
+//        int height = inputFormat.getInteger(MediaFormat.KEY_HEIGHT);
+//        int longer, shorter, outWidth, outHeight;
+//        if (width >= height) {
+//            longer = width;
+//            shorter = height;
+//            outWidth = LONGER_LENGTH;
+//            outHeight = SHORTER_LENGTH;
+//        } else {
+//            shorter = width;
+//            longer = height;
+//            outWidth = SHORTER_LENGTH;
+//            outHeight = LONGER_LENGTH;
+//        }
+//        if (longer * 9 != shorter * 16) {
+//            //throw new OutputFormatUnavailableException("This video is not 16:9, and is not able to transcode. (" + width + "x" + height + ")");
+//        }
+//        if (shorter <= SHORTER_LENGTH) {
+//            Log.d(Config.LOGTAG, "This video is less or equal to 720p, pass-through. (" + width + "x" + height + ")");
+//            return null;
+//        }
+//        MediaFormat format = MediaFormat.createVideoFormat("video/avc", outWidth, outHeight);
+//        format.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitrate);
+//        format.setInteger(MediaFormat.KEY_FRAME_RATE, 30);
+//        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 3);
+//        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            format.setInteger(MediaFormat.KEY_PROFILE ,MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline);
+//            format.setInteger(MediaFormat.KEY_LEVEL, MediaCodecInfo.CodecProfileLevel.AVCLevel13);
+//        }
+//        return format;
+//    }
 
-    @Override
-    public MediaFormat createAudioOutputFormat(MediaFormat inputFormat) {
-        final MediaFormat format = MediaFormat.createAudioFormat(MediaFormatExtraConstants.MIMETYPE_AUDIO_AAC, inputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE), mAudioChannels);
-        format.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, mAudioBitrate);
-        return format;
-    }
+//    @Override
+//    public MediaFormat createAudioOutputFormat(MediaFormat inputFormat) {
+//        final MediaFormat format = MediaFormat.createAudioFormat(MediaFormatExtraConstants.MIMETYPE_AUDIO_AAC, inputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE), mAudioChannels);
+//        format.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+//        format.setInteger(MediaFormat.KEY_BIT_RATE, mAudioBitrate);
+//        return format;
+//    }
 
 }

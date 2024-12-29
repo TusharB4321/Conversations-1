@@ -3,6 +3,7 @@ package eu.siacs.conversations.services;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.KeyguardManager;
 import android.app.Notification;
@@ -42,9 +43,12 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
 import android.util.Pair;
+import android.widget.Toast;
 
 import androidx.annotation.BoolRes;
 import androidx.annotation.IntegerRes;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.RemoteInput;
 import androidx.core.content.ContextCompat;
 
@@ -182,6 +186,8 @@ public class XmppConnectionService extends Service {
     private static final String ACTION_POST_CONNECTIVITY_CHANGE = "eu.siacs.conversations.POST_CONNECTIVITY_CHANGE";
 
     private static final String SETTING_LAST_ACTIVITY_TS = "last_activity_timestamp";
+    private static final int REQUEST_CODE_PERMISSION_READ_PHONE_STATE = 1;
+
 
     public final CountDownLatch restoredFromDatabaseLatch = new CountDownLatch(1);
     private final SerialSingleThreadExecutor mFileAddingExecutor = new SerialSingleThreadExecutor("FileAdding");
@@ -371,6 +377,8 @@ public class XmppConnectionService extends Service {
 
         }
     };
+
+
     private final AtomicLong mLastExpiryRun = new AtomicLong(0);
     private SecureRandom mRandom;
     private final LruCache<Pair<String, String>, ServiceDiscoveryResult> discoCache = new LruCache<>(20);
@@ -468,7 +476,7 @@ public class XmppConnectionService extends Service {
             getNotificationService().updateErrorNotification();
         }
     };
-    private OpenPgpServiceConnection pgpServiceConnection;
+   private OpenPgpServiceConnection pgpServiceConnection;
     private PgpEngine mPgpEngine = null;
     private WakeLock wakeLock;
     private LruCache<String, Bitmap> mBitmapCache;
@@ -1095,6 +1103,7 @@ public class XmppConnectionService extends Service {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("TrulyRandom")
     @Override
     public void onCreate() {
@@ -1186,10 +1195,23 @@ public class XmppConnectionService extends Service {
             }
             intentFilter.addAction(NotificationManager.ACTION_INTERRUPTION_FILTER_CHANGED);
         }
-        registerReceiver(this.mInternalEventReceiver, intentFilter);
+        //registerReceiver(this.mInternalEventReceiver, intentFilter);
+       // IntentFilter intentFilter = new IntentFilter("org.torproject.android.intent.action.STATUS");
+
+// Register the receiver with the RECEIVER_EXPORTED flag (or RECEIVER_NOT_EXPORTED if not meant to be exported)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            // Android 12 (API level 31) or higher requires specifying exported status for broadcast receivers
+            registerReceiver(mInternalEventReceiver, intentFilter, Context.RECEIVER_EXPORTED);
+        } else {
+            // For lower API levels, no need to specify the exported status
+            registerReceiver(mInternalEventReceiver, intentFilter);
+        }
         mForceDuringOnCreate.set(false);
         toggleForegroundService();
-        setupPhoneStateListener();
+
+           // setupPhoneStateListener();
+
+
     }
 
 
@@ -1314,7 +1336,7 @@ public class XmppConnectionService extends Service {
             } else {
                 notification = this.mNotificationService.createForegroundNotification();
                 id = NotificationService.FOREGROUND_NOTIFICATION_ID;
-                startForeground(id, notification);
+                //startForeground(id, notification);
             }
 
             if (!mForceForegroundService.get()) {
@@ -1374,7 +1396,8 @@ public class XmppConnectionService extends Service {
         final Intent intent = new Intent(this, EventReceiver.class);
         intent.setAction(ACTION_POST_CONNECTIVITY_CHANGE);
         try {
-            final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+            // Use FLAG_IMMUTABLE since the PendingIntent doesn't need to be modified
+            final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_IMMUTABLE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarmManager.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis, pendingIntent);
             } else {
@@ -1385,8 +1408,9 @@ public class XmppConnectionService extends Service {
         }
     }
 
+
     public void scheduleWakeUpCall(int seconds, int requestCode) {
-        final long timeToWake = SystemClock.elapsedRealtime() + (seconds < 0 ? 1 : seconds + 1) * 1000;
+        final long timeToWake = SystemClock.elapsedRealtime() + (seconds < 0 ? 1 : seconds + 1) * 1000L;
         final AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) {
             return;
@@ -1394,12 +1418,14 @@ public class XmppConnectionService extends Service {
         final Intent intent = new Intent(this, EventReceiver.class);
         intent.setAction("ping");
         try {
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent, 0);
+            // Use FLAG_IMMUTABLE here as the PendingIntent does not need to be mutable
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent, PendingIntent.FLAG_IMMUTABLE);
             alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeToWake, pendingIntent);
         } catch (RuntimeException e) {
             Log.e(Config.LOGTAG, "unable to schedule alarm for ping", e);
         }
     }
+
 
     @TargetApi(Build.VERSION_CODES.M)
     private void scheduleNextIdlePing() {
@@ -1411,12 +1437,14 @@ public class XmppConnectionService extends Service {
         final Intent intent = new Intent(this, EventReceiver.class);
         intent.setAction(ACTION_IDLE_PING);
         try {
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+            // Add FLAG_IMMUTABLE for the PendingIntent
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
             alarmManager.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, timeToWake, pendingIntent);
         } catch (RuntimeException e) {
             Log.d(Config.LOGTAG, "unable to schedule alarm for idle ping", e);
         }
     }
+
 
     public XmppConnection createConnection(final Account account) {
         final XmppConnection connection = new XmppConnection(account, this);

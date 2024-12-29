@@ -285,7 +285,7 @@ public class PgpEngine {
         Intent params = new Intent();
         params.setAction(OpenPgpApi.ACTION_GET_KEY);
         params.putExtra(OpenPgpApi.EXTRA_KEY_ID, pgpKeyId);
-        Intent result = api.executeApi(params, null, null);
+        Intent result = api.executeApi(params, (InputStream) null, null);
         return (PendingIntent) result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
     }
 }
